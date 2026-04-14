@@ -1,0 +1,17 @@
+name: Notify Scanner
+ 
+on:
+  push:
+    branches: [main]
+ 
+jobs:
+  trigger-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger scanner
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.SCANNER_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/lokesh0507/First_project/dispatches \
+            -d '{"event_type": "dependency-changed"}'
