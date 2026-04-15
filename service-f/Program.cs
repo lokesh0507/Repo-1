@@ -34,32 +34,11 @@ app.MapPost("/publish", async () =>
     return Results.Ok("Published eventTypeX to topic-A");
 });
 
-// ✅ Endpoint to trigger POST to service-a
-app.MapPost("/send-to-a", async (IHttpClientFactory httpClientFactory) =>
-{
-    var client = httpClientFactory.CreateClient();
 
-    var payload = new
-    {
-        Message = "Hello from Service-G",
-        Count = 5
-    };
 
-    var response = await client.PostAsJsonAsync(
-        "http://localhost:5000/receive-from-f",
-        payload
-    );
 
-    var result = await response.Content.ReadAsStringAsync();
-    return Results.Ok(result);
-});
 
-// ✅ POST API to receive data from service-g
-app.MapPost("/receive-from-f", (ServiceGPayload payload) =>
-{
-    Console.WriteLine($"Received from Service-G: {payload.Message}, Count: {payload.Count}");
-    return Results.Ok("✅ Data received by Service-A");
-});
+
 
     
 
