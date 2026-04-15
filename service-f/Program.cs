@@ -53,6 +53,14 @@ app.MapPost("/send-to-a", async (IHttpClientFactory httpClientFactory) =>
     var result = await response.Content.ReadAsStringAsync();
     return Results.Ok(result);
 });
+
+// ✅ POST API to receive data from service-g
+app.MapPost("/receive-from-f", (ServiceGPayload payload) =>
+{
+    Console.WriteLine($"Received from Service-G: {payload.Message}, Count: {payload.Count}");
+    return Results.Ok("✅ Data received by Service-A");
+});
+
     
 
 app.Run();
