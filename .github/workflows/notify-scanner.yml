@@ -1,9 +1,9 @@
 name: Notify Scanner
- 
+
 on:
   push:
     branches: [main]
- 
+
 jobs:
   trigger-scanner:
     runs-on: ubuntu-latest

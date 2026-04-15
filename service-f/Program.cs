@@ -34,4 +34,25 @@ app.MapPost("/publish", async () =>
     return Results.Ok("Published eventTypeX to topic-A");
 });
 
+// ✅ Endpoint to trigger POST to service-a
+app.MapPost("/send-to-a", async (IHttpClientFactory httpClientFactory) =>
+{
+    var client = httpClientFactory.CreateClient();
+
+    var payload = new
+    {
+        Message = "Hello from Service-G",
+        Count = 5
+    };
+
+    var response = await client.PostAsJsonAsync(
+        "http://localhost:5000/receive-from-g",
+        payload
+    );
+
+    var result = await response.Content.ReadAsStringAsync();
+    return Results.Ok(result);
+});
+    
+
 app.Run();
