@@ -46,7 +46,7 @@ app.MapPost("/send-to-a", async (IHttpClientFactory httpClientFactory) =>
     };
 
     var response = await client.PostAsJsonAsync(
-        "http://localhost:5000/receive-from-g",
+        "http://localhost:5000/receive-from-f",
         payload
     );
 
