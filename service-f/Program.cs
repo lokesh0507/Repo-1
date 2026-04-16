@@ -34,12 +34,9 @@ app.MapPost("/publish", async () =>
     return Results.Ok("Published eventTypeX to topic-A");
 });
 
-
-
-
-
-
-
-    
+app.MapGet("/status", () =>
+{
+    return Results.Ok("service-f is healthy!");
+});    
 
 app.Run();
