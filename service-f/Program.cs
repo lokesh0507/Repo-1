@@ -1,4 +1,4 @@
-using Confluent.Kafka;             // ← fixes Null, ProducerBuilder, Message errors
+using Confluent.Kafka;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +16,8 @@ app.MapPost("/publish", async () =>
 {
     using var producer = new ProducerBuilder<Null, string>(producerConfig).Build();
 
-    var eventData = new TopicAEvent    // ← fixed: class defined at bottom
+    // ✅ FIXED — no comment after TopicAEvent
+    var eventData = new TopicAEvent
     {
         EventType = "eventTypeX",
         OrderId   = Guid.NewGuid().ToString(),
@@ -43,8 +44,7 @@ app.Run();
 
 
 // ──────────────────────────────────────────────
-// ✅ REQUIRED — Add this class at bottom of file
-// This fixes "TopicAEvent could not be found" error
+// ✅ Named Event Class
 // ──────────────────────────────────────────────
 
 public class TopicAEvent
