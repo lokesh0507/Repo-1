@@ -1,22 +1,26 @@
-using Confluent.Kafka;
-using System.Text.Json;
+using SharedKafka.Extensions;
+using SharedKafka.Producer;
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
-var producerConfig = new ProducerConfig
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpClient();
+
+// ✅ FIXED — AddSharedKafka BEFORE builder.Build()
+builder.Services.AddSharedKafka(options =>
 {
-    BootstrapServers = "127.0.0.1:9092",
-    ClientId         = "service-f"
-};
+    options.BootstrapServers = "127.0.0.1:9092";
+    options.ClientId         = "service-f";
+    options.GroupId          = "service-f-group";
+});
+
+// ✅ Build AFTER registering services
+var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapPost("/publish", async () =>
+app.MapPost("/publish", async (IKafkaProducer kafkaProducer) =>
 {
-    using var producer = new ProducerBuilder<Null, string>(producerConfig).Build();
-
-    // ✅ FIXED — no comment after TopicAEvent
     var eventData = new TopicAEvent
     {
         EventType = "eventTypeX",
@@ -25,28 +29,20 @@ app.MapPost("/publish", async () =>
         CreatedAt = DateTime.UtcNow
     };
 
-    var message = new Message<Null, string>
-    {
-        Value = JsonSerializer.Serialize(eventData)
-    };
+    // ✅ FIXED — use kafkaProducer (instance) not KafkaProducer (class)
+    await kafkaProducer.ProduceAsync("topic-A", eventData);
 
-    await producer.ProduceAsync("topic-A", message);
-
-    return Results.Ok("Published TopicAEvent to topic-A");
+    return Results.Ok("✅ Published TopicAEvent to topic-A");
 });
 
 app.MapGet("/status", () =>
 {
-    return Results.Ok("service-f is healthy!");
+    return Results.Ok("✅ service-f is healthy!");
 });
 
 app.Run();
 
-
-// ──────────────────────────────────────────────
-// ✅ Named Event Class
-// ──────────────────────────────────────────────
-
+// ✅ Event class
 public class TopicAEvent
 {
     public string   EventType { get; set; } = string.Empty;
